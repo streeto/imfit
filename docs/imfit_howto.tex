@@ -61,7 +61,10 @@
 \newcommand{\Makeimage}{\texttt{Makeimage}}
 
 \newcommand{\arcdeg}{\ensuremath{^{\circ}}}
+
 \newcommand{\chisquare}{\ensuremath{\chi^{2}}}
+\newcommand{\chisquaredata}{\ensuremath{\chi_{d}^{2}}}
+\newcommand{\chisquaremodel}{\ensuremath{\chi_{m}^{2}}}
 
 \newcommand{\red}{\textcolor{red}}
 
@@ -94,7 +97,7 @@ more 2D surface-brightness functions (e.g., elliptical exponential, elliptical S
 circular Gaussian) which will be added together in order to generate a
 model image; this model image will then be matched to the input image by
 adjusting the 2D function parameters via nonlinear minimization of the total
-\chisquare{} (or of the total Cash statistic in the alternate case of pure Poisson
+\chisquare{} (or of the total Cash statistic in the alternate case of Poisson
 statistics).
 
 The 2D functions can be grouped into arbitrary sets sharing a common $(x,y)$
@@ -130,9 +133,10 @@ under the \textsc{gnu} Public License (\textsc{gpl}).
 \bigskip
 
 \textbf{System Requirements:} \Imfit{} has been built and tested on
-Intel-based MacOS X 10.6--10.8 (Snow Leopard, Lion, and Mountain Lion)
-and Linux (Ubuntu) systems. It uses standard C++ and should work on any
-Unix-style system with a modern C++ compiler and the Standard Template
+Intel-based MacOS X 10.6--10.9 (Snow Leopard, Lion, Mountain Lion, and
+Mavericks)
+and Linux (Ubuntu) systems. It uses standard C++ and should work on most
+Unix-style systems with a modern C++ compiler and the Standard Template
 Library (e.g., \textsc{gcc} v4 or higher\footnote{\textsc{gcc} v4.2 or
 higher is necessary to take advantage of OpenMP-related speedups.}). It
 relies on two external, open-source libraries: version 3 of the
@@ -149,7 +153,7 @@ but the program can also be built without these.
 
 \Imfit{} also includes modified versions of Craig Markwardt's
 \texttt{mpfit} code (an enhanced version of the \textsc{minpack-1}
-Levernberg-Marquardt least-squares fitting code) and the Differential
+Levenberg-Marquardt least-squares fitting code) and the Differential
 Evolution fitting code of Rainer Storn and Kenneth Price (more
 specifically, a C++ wrapper written by Lester E. Godwin).
 
@@ -159,11 +163,12 @@ specifically, a C++ wrapper written by Lester E. Godwin).
 
 \section{Pre-Compiled Binaries}
 
-Pre-built binaries for Intel-based MacOS X and Linux systems, along with the
-source code, are available at
-\url{http://www.mpe.mpg.de/~erwin/code/imfit/}. The pre-compiled binaries included
-statically linked versions of the \textsc{cfitsio}, \textsc{fftw}, \textsc{gsl}, and NLopt libraries, so you do
-not need to have those installed.
+Pre-built binaries for Intel-based MacOS X and Linux systems, along with
+the source code, are available at
+\url{http://www.mpe.mpg.de/~erwin/code/imfit/}. The pre-compiled
+binaries included statically linked versions of the \textsc{cfitsio},
+\textsc{fftw}, \textsc{gsl}, and NLopt libraries, so you do not need to
+have those installed.
 
 
 \section{Building \Imfit{} from Source: Outline}
@@ -176,16 +181,16 @@ multi-core CPU (or multiple CPUs sharing main memory), you should
 install the threaded version of \textsc{fftw} as well, since this speeds up PSF
 convolution.
 
-\item (Optional) Install the NLopt library --- this is only necessary if you
-wish to use the Nelder-Mead minimization algorithm. \Imfit{} can easily be built
-without this, if for some reason you don't have access to the NLopt library.
+\item (Optional, but strongly recommended) Install the NLopt library ---
+this is necessary if you wish to use the Nelder-Mead minimization
+algorithm. \Imfit{} can be built without this, if for some reason
+you don't have access to the NLopt library.
 
 \item (Optional) Install the \textsc{gnu} Scientific Library
 (\textsc{gsl}) --- this is only necessary if you wish to use image
 functions that rely on \textsc{gsl}.  Currently, the only such functions
-are the EdgeOnDisk component, which uses a modified Bessell function,
-and the sample 3D line-of-sight integration functions (e.g.,
-ExponentialDisk3D). \Imfit{} can easily be built without these
+are the EdgeOnDisk component and the sample 3D line-of-sight integration
+functions (e.g., ExponentialDisk3D). \Imfit{} can be built without these
 components, if for some reason you don't have access to the \textsc{gsl}.
 
 \item Install SCons (if needed; see below).
@@ -325,6 +330,15 @@ with the following commands:
 \texttt{\$ scons --no-openmp imfit} \\
 \texttt{\$ scons --no-openmp makeimage}
 \end{quote}
+
+\textit{Note for compiling on MacOS X:} the
+command-line compilers which come with the current Apple-supplied
+development environment (Xcode 5) are based on Clang instead of
+\textsc{gcc} and so do \textit{not} support OpenMP. In order to compile
+with OpenMP, you will need either a previous version of Xcode (e.g.,
+from a prior installation) or a separate installation of \textsc{gcc}
+4.2 or later (such as those available at
+\url{http://hpc.sourceforge.net/}).
 
 %If you are using the \texttt{configure + make} approach instead, you can use the
 %following when running \texttt{configure}:
@@ -487,19 +501,19 @@ Cash statistic computation. (If the pixel units are counts/sec, then the sky lev
 should also be in those units, and you should use the ``\texttt{--exptime}'' option
 to specify the original exposure time.)
 \item \texttt{--gain} \textit{value} --- specifies the A/D gain (in electrons/ADU)
-of the input image; used for internal computation of the noise map for \chisquare{}
-minimization.
+of the input image; used for internal computation of the noise map (for \chisquare{}
+minimization) or for correcting the Cash statistic computation.
 \item \texttt{--readnoise} \textit{value} --- specifies the read noise (in electrons)
 of the input image; used for internal computation of the noise map for \chisquare{}
-minimization.
+minimization (this is ignored in the case of Cash statistic minimization).
 \item \texttt{--exptime} \textit{value} --- specifies the exposure time of the image;
 this should \textbf{only} be used \textit{if} the image has been divided by the exposure time
 (i.e., if the pixel units are counts/sec).
 \item \texttt{--ncombined} \textit{value} --- if values in the input
 image are the result of averaging (or computing the median of) two or
 more original images, then this option should be used to specify the
-number of original images; used for internal computation of the noise
-map for \chisquare{} minimization.  If multiple images were
+number of original images; used for internal computation of the noise map (for \chisquare{}
+minimization) or for correcting the Cash statistic computation.  If multiple images were
 \textit{added} together with no rescaling, then do not use this option.
 
 \bigskip
@@ -525,9 +539,12 @@ the minimization technique (\textsc{Warning}: much slower!)
 (instead of the data values) to estimate the individual-pixel dispersions
 $\sigma_{i}$ for \chisquare{} minimization
 
-\item \texttt{--cashstat} --- use Cash statistic instead of \chisquare{} as the fit
-statistic for minimization; for use in the case of Poisson statistics and zero read
-noise. Cannot be used with the (default) Levenberg-Marquardt minimization technique.
+\item \texttt{--cashstat} --- use Cash statistic instead of \chisquare{}
+as the fit statistic for minimization. This is especially useful in the
+case of Poisson statistics and low or zero read noise, but it also provides less
+biased fits than the \chisquare{} approach even when count levels are
+high. Cannot be used with the (default) Levenberg-Marquardt minimization
+technique.
 
 \item \texttt{--ftol} \textit{FTOL-value} --- specify tolerance for
 fractional improvements in the fit statistic (\chisquare{} or Cash
@@ -544,7 +561,8 @@ of bootstrap resampling after the fit, to estimate parameter errors.
 
 \item \texttt{--chisquare-only} --- Evaluate the \chisquare{} value for
 the initial input model as a fit to the input image, \textit{without}
-doing any minimization to find a better solution.
+doing any minimization to find a better solution. (If \texttt{--cashstat} is
+also specified, then the Cash statistic is evaluated instead.)
 
 \bigskip
 
@@ -750,6 +768,9 @@ pair following the initial-value specification. E.g.:
 \begin{quote}
 \texttt{X0} ~~ 442.85 ~~ 441.0,443.5
 \end{quote}
+Note that specifying \textit{equal} lower and upper limits for a parameter (or a lower limit
+which is higher than the upper limit) is not allowed; to specify that a parameter
+value should remain constant, used the ``fixed'' keyword as described above.
 
 
 \section{Optional Image-Description Parameters}
@@ -854,7 +875,7 @@ The complete list of function parameters for each function (suitable for copying
 and pasting into a configuration file) can always be
 obtained by running \imfit{} with the ``\texttt{--list-parameters}'' option:
 \begin{quote}
-  \texttt{\$ \imfit{} --list-paremeters}
+  \texttt{\$ \imfit{} --list-parameters}
 \end{quote}
 
 
@@ -879,7 +900,7 @@ exposure time via the ``\texttt{--exptime}'' option (or the EXPTIME keyword
 in a configuration file).
 
 If the image is an \textit{average} of $N$ input images of the same exposure time, you
-can either multipy the image by $N$ \textit{or} use the ``\texttt{--ncombined}'' option
+can either multiply the image by $N$ \textit{or} use the ``\texttt{--ncombined}'' option
 to tell \imfit{} how to adjust the error estimations.  The latter option is slightly
 better, because \imfit{} will also scale the read noise accordingly.
 
@@ -1007,7 +1028,7 @@ intensities in counts/pixel, multiplied by the effective gain $g_{\mathrm{eff}}$
 To simulate the effects of seeing and other telescope resolution effects, model
 images can be convolved with a PSF (point-spread function) image. This uses an
 input \textsc{fits} file which contains the point spread function. The actual convolution
-uses Fast Fourier Transforms of the interally-generated model image and the PSF
+uses Fast Fourier Transforms of the internally-generated model image and the PSF
 image to compute the output convolved model image.
 
 PSF images should be square, ideally with width = an odd number of pixels, and
@@ -1166,15 +1187,16 @@ TBD.
 
 The (default) Levenberg-Marquardt minimization algorithm used by
 \imfit{} automatically generates a set of (symmetric) uncertainty
-estimates for each  free parameter at the conclusion of the fitting
+estimates for each free parameter at the conclusion of the fitting
 process; as noted above, these are printed to the terminal as part of
 the summary output.
 
-These values come from the covariance matrix derived from the final Jacobian
-matrix corresponding to the best-fit solution, and should be viewed with caution: for
-example, they assume that the \chisquare{} landscape in the vicinity of
-the best-fit solution is parabolic XXX. In practice, they should probably be
-seen as \textit{lower limits} on the uncertainty.
+These values come from the covariance matrix derived from the final
+Hessian matrix corresponding to the best-fit solution, and should be
+viewed with caution: for example, they assume that the \chisquare{}
+landscape in the vicinity of the best-fit solution is parabolic. In
+practice, they should probably be seen as \textit{lower limits} on the
+uncertainty.
 
 The other fitting algorithms used by \imfit{} do not compute gradients
 in the fit landscape, and so they do not produce automatic uncertainty
@@ -1183,7 +1205,7 @@ estimates. Although one could certainly take the solution of a
 L-M run of \imfit, thus generating L-M--based uncertainties, this is not
 possible when using the Cash statistic.
 
-As an alternative to the somewhat dubious L-M uncertainty estimates --
+As an alternative to the L-M uncertainty estimates --
 and as a method for estimating uncertainties in the case of
 Cash-statistic minimization -- \imfit{} offers the option of bootstrap
 resampling. This is done with the ``\texttt{--bootstrap}'' command-line
@@ -1200,7 +1222,7 @@ are used as starting values for the new fit.} After $n$ iterations, the
 combined set of bootstrapped parameter values can be used as a
 distribution for estimating confidence intervals; \imfit{} finds and
 outputs the 68.3\% confidence intervals and the standard deviation for
-each parameter. While this approach is likely to produce more plausible
+each parameter. While this approach may produce more plausible
 uncertainties for the best-fit parameters -- and can be used with both
 \chisquare{} and Cash-statistic minimization and as an adjunct to any of
 the three minimization algorithms -- it \textit{is} slow, as one is
@@ -1208,12 +1230,15 @@ essentially repeating (a somewhat faster version of) the fitting process
 $n$ times. Ideally, one should do at least 200 iterations -- 1000 or
 more is preferable -- to get reasonably consistent confidence intervals.
 Since this can take \textit{much} longer than the original fitting
-process, it is probably not a good idea to use bootstrap resampling when one is
-engaged in exploratory fitting, but to instead postpone it until one is
-reasonably certain one has the final fit. To keep things as fast
+process, it is probably not a good idea to use bootstrap resampling when
+one is engaged in exploratory fitting, but to instead postpone it until
+one is reasonably certain one has the final fit. To keep things as fast
 as possible, \imfit{} automatically chooses L-M minimization for the
 bootstrap process -- unless the Cash statistic is being used, in which
-case the N-M simplex method is used.
+case the N-M simplex method is used.\footnote{If \imfit{} was compiled
+without the NLopt library, then the N-M simplex method is not available
+and \imfit{} uses DE instead -- which will make the bootstrap estimation
+\textit{very} slow.}
 
 (Future versions of \imfit{} may include the option of dumping all bootstrapped
 parameter values to a text file, to allow more detailed inspection of the
@@ -1448,7 +1473,7 @@ We need to make three sets of changes:
 \begin{itemize}
 \item Change the class name from ``Gaussian'' to our new name (``NewMoffat'');
 \item Change the relevant code which computes the function;
-\item Rename, add, or delete variables to accomodate the new algorithm.
+\item Rename, add, or delete variables to accommodate the new algorithm.
 \end{itemize}
 
 
@@ -1875,7 +1900,7 @@ gamma
 %\end{verbatim}
 
 
-\subsubsection{BrokenExponential}
+\subsubsection{BrokenExponential}\label{sec:brokenexp}
 
 Similar to Exponential, but with \textit{two}
 exponential radial zones (with different scalelengths) joined by a transition region
@@ -1890,7 +1915,7 @@ $\alpha$ parameterizes the sharpness of the break.  (See \citet{erwin08}.) Low v
 mean very smooth, gradual breaks, while high values correspond to abrupt
 transitions.  $S$ is a scaling factor, given by
 \begin{equation}
-  S \; = \; (1 + e^{-\alpha R_{b}})^{\frac{1}{\alpha} (\frac{1}{h_{1}} \, - 
+  S \; = \; (1 + e^{-\alpha R_{b}})^{-\frac{1}{\alpha} (\frac{1}{h_{1}} \, - 
   \, \frac{1}{h_{2}})}.
 \end{equation}
 
@@ -1969,9 +1994,11 @@ internally.
 When $n = 1$, this becomes the familiar $\mathrm{sech}^2$ model for the
 vertical distribution of a disk (with $z_{0}$ corresponding to $1/2$ of the
 $z_0$ in the original definition of \citet{vdk81}). As $n \rightarrow \infty$,
-the vertical distribution approaches an exponential with $\exp(-z/z_{0})$; in
-practice, the can be approximated by setting $n$ equal to some fixed, large
-number.
+the vertical distribution approaches an exponential with $\exp(-z/z_{0})$. In practice,
+the code substitutes a pure exponential function for the $\mathrm{sech}^{2/n}$ term whenever 
+\begin{equation}
+\frac{n}{2} \frac{z}{z_{0}} > 100.
+\end{equation}
 
 Note that this particular function requires that the \textsc{gnu} Scientific Library
 (\textsc{gsl}) be installed; if the \textsc{gsl} is not installed, \imfit{} should be compiled
@@ -2072,7 +2099,7 @@ midplane has $z = 0$), the luminosity density at radius $r$ from
 the central axis and
 at height $z$ from the midplane is given by
 \begin{equation}
-j(r,z) \; = \; J_{0} \; \exp(-r/h) \, {\mathrm{sech}}^{2/n} (n \, z/(2 \, z_{0}))
+j(r,z) \; = \; J_{0} \; \exp(-r/h) \; {\mathrm{sech}}^{2/n} (n \, z/(2 \, z_{0}))
 \end{equation}
 where $h$ is the exponential scale length in the disk plane, $z_{0}$ is the vertical
 scale height, and $J_{0}$ is the central luminosity density.
@@ -2102,8 +2129,8 @@ the $i= 90\arcdeg$ case), and even slower than the standard Exponential function
 
 \subsubsection{BrokenExponentialDisk3D}
 
-This function is similar to the ExponentialDisk3D function, except that the radial
-profile of the luminosity density follows a broken-exponential profile (e.g., Section~\ref{})
+This function is identical to the ExponentialDisk3D function, except that the radial
+profile of the luminosity density follows a broken-exponential function (e.g., Section~\ref{sec:brokenexp})
 instead of a simple exponential. Consequently, it has the following parameters:
 
 \begin{verbatim}
@@ -2130,7 +2157,7 @@ with a radial Gaussian profile (centered at \texttt{a\_ring} along ring's major
 axis, with in-plane width $\sigma$) and a vertical exponential profile
 (with scale height \texttt{h\_z}). The ring can be envisioned as residing in an
 (invisible) plane which has a line of nodes at angle \texttt{PA} and inclination
-\texttt{inc} (as for the ExponendialDisk3D function, above); within this plane,
+\texttt{inc} (as for the ExponentialDisk3D function, above); within this plane,
 the ring's major axis is at position angle \texttt{PA\_ring} \textit{relative to
 the perpendicular to the line of nodes}, and the ring has an ellipticity given
 by \texttt{ell}.
@@ -2157,10 +2184,12 @@ Major inspirations for \Imfit{} include both \textsc{galfit} \citep{peng02,peng1
 \textsc{budda} \citep{desouza04,gadotti08}.
 
 Thanks also to Michael Opitsch and Michael Williams for being (partly unwitting)
-beta testers and for their feedback, to Martin Kuemmel for suggestion
+beta testers and for their feedback, to Martin Kuemmel for suggesting
 an improvement (and finding a related bug), to Roberto Saglia for urging me
 to implement the Core-S{\'e}rsic function, and to Maximilian Fabricius for suggesting
-improvements to the documentation.
+improvements to the documentation. Additional bug reports and suggestions from 
+Giulia Savorgnan, Guillermo Barro, and Sergio Pascual are gratefully appreciated.
+
 
 \section{Data Sources}
 
