@@ -1,0 +1,67 @@
+	Image file = tests/n3073rss_small_cps.fits
+	configuration file = tests/imfit_config_n3073.dat
+	PSF image = tests/psf_moffat_35.fits
+	mask image = tests/n3073rss_small_mask.fits
+	original sky level = 2.86287 ADU
+	exposure time = 53.9075 sec
+Value from config file: gain = 4.725000 e-/ADU
+Value from config file: read noise = 4.300000 e-
+Original-sky value in config file ignored (using command-line value)
+Reading data image ("tests/n3073rss_small_cps.fits") ...
+naxis1 [# pixels/row] = 150, naxis2 [# pixels/col] = 200; nPixels_tot = 30000
+Reading mask image ("tests/n3073rss_small_mask.fits") ...
+Reading PSF image ("tests/psf_moffat_35.fits") ...
+naxis1 [# pixels/row] = 35, naxis2 [# pixels/col] = 35; nPixels_tot = 1225
+Function: Sersic
+Function: Exponential
+11 total parameters
+Model Object: 30000 data values (pixels)
+* No noise image supplied ... will generate noise image from input image.
+ModelObject::AddMaskVector -- treating zero-valued pixels as good ...
+ModelObject: mask vector applied to weight vector. (28754 valid pixels remain)
+Setting up parameter information array ...
+11 free parameters (28743 degrees of freedom)
+
+Calling Levenberg-Marquardt solver ...
+	mpfit iteration 1: chi^2 = 1377100.519497
+	mpfit iteration 2: chi^2 = 1050144.168912
+	mpfit iteration 3: chi^2 = 120519.142864
+	mpfit iteration 4: chi^2 = 71408.075304
+	mpfit iteration 5: chi^2 = 43868.103584
+	mpfit iteration 6: chi^2 = 36912.002582
+	mpfit iteration 7: chi^2 = 36828.859318
+	mpfit iteration 8: chi^2 = 36828.611699
+	mpfit iteration 9: chi^2 = 36828.581709
+	mpfit iteration 10: chi^2 = 36828.578450
+	mpfit iteration 11: chi^2 = 36828.578059
+	mpfit iteration 12: chi^2 = 36828.578011
+
+*** mpfit status = 1 -- SUCCESS: Convergence in chi-square value.
+  CHI-SQUARE = 36828.578011    (28743 DOF)
+  INITIAL CHI^2 = 3184994682.091267
+        NPAR = 11
+       NFREE = 11
+     NPEGGED = 0
+     NITER = 13
+      NFEV = 147
+
+Reduced Chi^2 = 1.281306
+AIC = 36850.587197, BIC = 36941.509865
+
+X0		100.7073 # +/- 0.0058
+Y0		97.0877 # +/- 0.0052
+FUNCTION Sersic
+PA		111.919 # +/- 0.264349
+ell		0.184258 # +/- 0.00159882
+n		3.28046 # +/- 0.0340831
+I_e		1.45249 # +/- 0.0499468
+r_e		 26.797 # +/- 0.648142
+FUNCTION Exponential
+PA		51.7246 # +/- 0.806569
+ell		0.352234 # +/- 0.0140126
+I_0		0.737829 # +/- 0.0333997
+h		53.6064 # +/- 1.16482
+
+Saving best-fit parameters in file "bestfit_parameters_imfit.dat"
+Done!
+
