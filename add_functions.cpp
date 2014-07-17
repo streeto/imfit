@@ -70,6 +70,8 @@
 #include "func_boxytest3d.h"
 #include "func_edge-on-disk_n4762.h"
 #include "func_edge-on-disk_n4762v2.h"
+#include "func_logspiral.h"
+#include "func_nan.h"
 #endif
 
 using namespace std;
@@ -210,6 +212,12 @@ void PopulateFactoryMap( map<string, factory*>& input_factory_map )
   EdgeOnDiskN4762v2::GetClassShortName(classFuncName);
   input_factory_map[classFuncName] = new funcobj_factory<EdgeOnDiskN4762v2>();
 
+  LogSpiral::GetClassShortName(classFuncName);
+  input_factory_map[classFuncName] = new funcobj_factory<LogSpiral>();
+
+  NaNFunc::GetClassShortName(classFuncName);
+  input_factory_map[classFuncName] = new funcobj_factory<NaNFunc>();
+
 #endif
 }
 
@@ -223,7 +231,7 @@ int AddFunctions( ModelObject *theModel, vector<string> &functionNameList,
   string  currentName;
   FunctionObject  *thisFunctionObj;
   map<string, factory*>  factory_map;
-  vector<string> factory_map_names;
+//  vector<string> factory_map_names;
 
   PopulateFactoryMap(factory_map);
 

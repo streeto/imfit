@@ -31,6 +31,8 @@ class ModelObject
     void SetDebugLevel( int debuggingLevel );
     
     void SetMaxThreads( int maxThreadNumber );
+
+    void SetOMPChunkSize( int chunkSize );
     
     // common, not specialized
     // Adds a new FunctionObject pointer to the internal vector
@@ -69,13 +71,13 @@ class ModelObject
     virtual void AddErrorVector1D( int nDataValues, double *pixelVector, int inputType ) { ; };
 
     // 1D only
-    virtual void AddMaskVector1D( int nDataValues, double *inputVector, int inputType ) { ; };
+    virtual int AddMaskVector1D( int nDataValues, double *inputVector, int inputType ) { return 0; };
     
 	// 2D only
     virtual void GenerateErrorVector( );
 
 	// 2D only
-    virtual void AddMaskVector( int nDataValues, int nImageColumns, int nImageRows,
+    virtual int AddMaskVector( int nDataValues, int nImageColumns, int nImageRows,
                          double *pixelVector, int inputType );
 
 	// 2D only
@@ -97,7 +99,7 @@ class ModelObject
     // Specialized by ModelObject1D
     virtual void ComputeDeviates( double yResults[], double params[] );
 
-     // common, not specialized
+     // common, not specialized (currently not specialized by ModelObject1d)
     virtual void UseModelErrors( );
 
      // common, not specialized
@@ -125,23 +127,31 @@ class ModelObject
     virtual void PrintModelParams( FILE *output_ptr, double params[], mp_par *parameterInfo,
 																		double errs[] );
 
+
     // 2D only; NOT USED ANYWHERE!
     void PrintImage( double *pixelVector, int nColumns, int nRows );
 
-		// 2D only
-    void PrintInputImage( );
+    // 1D only
+    virtual void PrintVector( double *theVector, int nVals ) { ; };
 
-		// 2D only
-    void PrintModelImage( );
+	// 1D or 2D
+    virtual void PrintInputImage( );
 
-    // 2D only; NOT USED ANYWHERE!
-    void PrintWeights( );
+	// 1D or 2D
+    virtual void PrintModelImage( );
+
+	// 1D or 2D
+    virtual void PrintWeights( );
+
+	// 1D or 2D
+    virtual void PrintMask( );
+
 
     // common, but Specialized by ModelObject1D
     virtual void PopulateParameterNames( );
 
-    // common, might be specialized...
-    virtual void FinalSetup( );
+    // common, but Specialized by ModelObject1D
+    virtual int FinalSetupForFitting( );
 
     // common, not specialized
     string& GetParameterName( int i );
@@ -201,15 +211,16 @@ class ModelObject
 	double  zeroPoint;
 	double  gain, readNoise, exposureTime, originalSky, effectiveGain;
 	double  readNoise_adu_squared;
-    int  debugLevel;
-    int  maxRequestedThreads;
-    bool  dataValsSet, parameterBoundsSet, modelVectorAllocated, weightVectorAllocated;
+    int  debugLevel, verboseLevel;
+    int  maxRequestedThreads, ompChunkSize;
+    bool  dataValsSet, parameterBoundsSet;
+    bool  modelVectorAllocated, weightVectorAllocated, maskVectorAllocated;
     bool  residualVectorAllocated, outputModelVectorAllocated;
     bool  setStartFlag_allocated;
     bool  modelImageComputed;
     bool  weightValsSet, maskExists, doBootstrap, bootstrapIndicesAllocated;
     bool  doConvolution;
-    bool  modelErrors;
+    bool  modelErrors, dataErrors, externalErrorVectorSupplied;
     bool  useCashStatistic;
     bool  deviatesVectorAllocated;   // for chi-squared calculations
     bool  zeroPointSet;

@@ -74,20 +74,24 @@ const int  REPORT_STEPS_PER_VERBOSE_OUTPUT = 5;
 // Module variables -- used to control user feedback within myfunc_nlopt
 static int  verboseOutput;
 static int  funcCount = 0;
+nlopt_opt  optimizer;
+
 
 
 // Objective function: calculates the objective value (ignore gradient calculation)
 // Keep track of how many times this function has been called, and report current
 // chi^2 (or other objective-function value) every 20 calls
+// Note that parameters n and grad are unused, but required by the NLopt interface.
 double myfunc_nlopt(unsigned n, const double *x, double *grad, void *my_func_data)
 {
   ModelObject *theModel = (ModelObject *)my_func_data;
   // following is a necessary kludge bcs theModel->GetFitStatistic() won't accept const double*
   double  *params = (double *)x;
   double  fitStatistic;
+  nlopt_result  junk;
   
   fitStatistic = theModel->GetFitStatistic(params);
-
+  
   // feedback to user
   funcCount++;
   if (verboseOutput > 0) {
@@ -99,6 +103,12 @@ double myfunc_nlopt(unsigned n, const double *x, double *grad, void *my_func_dat
     }
   }
   
+  if isnan(fitStatistic) {
+    fprintf(stderr, "\n*** NaN-valued fit statistic detected (N-M optimization)!\n");
+    fprintf(stderr, "*** Terminating the fit...\n");
+    junk = nlopt_force_stop(optimizer);
+  }
+
   return(fitStatistic);
 }
 
@@ -151,7 +161,7 @@ void InterpretResult( nlopt_result  resultValue )
 int NMSimplexFit( int nParamsTot, double *paramVector, mp_par *parameterLimits, 
                   ModelObject *theModel, double ftol, int verbose )
 {
-  nlopt_opt  optimizer;
+//  nlopt_opt  optimizer;
   nlopt_result  result;
   int  maxEvaluations;
   double  finalStatisticVal;
@@ -175,7 +185,7 @@ int NMSimplexFit( int nParamsTot, double *paramVector, mp_par *parameterLimits,
         minParamValues[i] = paramVector[i];
         maxParamValues[i] = paramVector[i];
       }
-      else if ((parameterLimits[i].limited[0] == 1) && (parameterLimits[i].limited[0] == 1)) {
+      else if ((parameterLimits[i].limited[0] == 1) && (parameterLimits[i].limited[1] == 1)) {
         // user specified parameter limits for this parameter
         minParamValues[i] = parameterLimits[i].limits[0];
         maxParamValues[i] = parameterLimits[i].limits[1];
@@ -218,8 +228,10 @@ int NMSimplexFit( int nParamsTot, double *paramVector, mp_par *parameterLimits,
   nlopt_destroy(optimizer);
   free(minParamValues);
   free(maxParamValues);
-  return 1;
+  return (int)result;
 }
+
+
 
 
 /* END OF FILE: nmsimplex_fit.cpp ---------------------------------------- */

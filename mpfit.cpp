@@ -322,7 +322,7 @@ int mpfit(mp_func funct, int m, int npar,
   conf.douserscale = 0;
   conf.maxfev = 0;
   conf.covtol = 1e-14;
-  conf.nofinitecheck = 0;
+  conf.nofinitecheck = 1;
   
   if (config) {
     /* Transfer any user-specified configurations */
@@ -625,7 +625,8 @@ int mpfit(mp_func funct, int m, int npar,
     
     for (j = 0; j < nfree; j++) {
       for (i = 0; i < nfree; i++) {
-        if (finite(fjac[off+i]) == 0) nonfinite = 1;
+        if (isfinite(fjac[off+i]) == 0)
+          nonfinite = 1;
       }
       off += ldfjac;
     }
@@ -711,10 +712,10 @@ int mpfit(mp_func funct, int m, int npar,
       if (upegged && (wa1[j] > 0)) wa1[j] = 0;
 
       if (dwa1 && qllim[j] && ((x[j] + wa1[j]) < llim[j])) {
-        alpha = mp_dmin1(alpha, (llim[j]-x[j])/wa1[j]);
+        alpha = mp_dmin1(alpha, (llim[j] - x[j])/wa1[j]);
       }
       if (dwa1 && qulim[j] && ((x[j] + wa1[j]) > ulim[j])) {
-        alpha = mp_dmin1(alpha, (ulim[j]-x[j])/wa1[j]);
+        alpha = mp_dmin1(alpha, (ulim[j] - x[j])/wa1[j]);
       }
     }
     
@@ -731,8 +732,8 @@ int mpfit(mp_func funct, int m, int npar,
        */
       sgnu = (ulim[j] >= 0) ? (+1) : (-1);
       sgnl = (llim[j] >= 0) ? (+1) : (-1);
-      ulim1 = ulim[j]*(1-sgnu*MP_MACHEP0) - ((ulim[j] == 0)?(MP_MACHEP0):0);
-      llim1 = llim[j]*(1+sgnl*MP_MACHEP0) + ((llim[j] == 0)?(MP_MACHEP0):0);
+      ulim1 = ulim[j]*(1 - sgnu*MP_MACHEP0) - ((ulim[j] == 0)?(MP_MACHEP0):0);
+      llim1 = llim[j]*(1 + sgnl*MP_MACHEP0) + ((llim[j] == 0)?(MP_MACHEP0):0);
 
       if (qulim[j] && (wa2[j] >= ulim1)) {
         wa2[j] = ulim[j];
@@ -940,7 +941,7 @@ int mpfit(mp_func funct, int m, int npar,
   if (pars) for (i = 0; i < npar; i++) {
     if ((pars[i].limited[0] && (pars[i].limits[0] == xall[i])) ||
         (pars[i].limited[1] && (pars[i].limits[1] == xall[i]))) {
-      npegged ++;
+      npegged++;
     }
   }
 
@@ -2330,7 +2331,7 @@ int CheckFinite(int ntot, double *matrix)
 {
 
   for (int j = 0; j < ntot; j++) {
-    if (! finite(matrix[j]))
+    if (! isfinite(matrix[j]))
       return 0;
   }
   return 1;
