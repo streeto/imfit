@@ -94,8 +94,9 @@ void BootstrapErrors( double *bestfitParams, mp_par *parameterLimits, bool param
     for (i = 0; i < nParams; i++)
       paramsVect[i] = bestfitParams[i];
     if (! usingCashStatistic) {
+      mp_result result;
       status = LevMarFit(nParams, nFreeParams, nValidPixels, paramsVect, parameterLimits, 
-      					theModel, ftol, paramLimitsExist, verboseLevel);
+      					theModel, ftol, paramLimitsExist, result, verboseLevel);
     } else {
 #ifndef NO_NLOPT
       status = NMSimplexFit(nParams, paramsVect, parameterLimits, theModel, ftol,

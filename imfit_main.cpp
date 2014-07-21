@@ -354,7 +354,8 @@ int main(int argc, char *argv[])
     theModel->SetMaxThreads(options.maxThreads);
 
   /* Add functions to the model object */
-  status = AddFunctions(theModel, functionList, functionSetIndices, options.subsamplingFlag);
+  status = AddFunctions(theModel, functionList, functionSetIndices,
+                        options.subsamplingFlag, options.verbose);
   if (status < 0) {
   	fprintf(stderr, "*** ERROR: Failure in AddFunctions!\n\n");
   	exit(-1);
@@ -501,9 +502,10 @@ int main(int argc, char *argv[])
       printf("chi^2 (data-based errors):\n");
     
     if (options.solver == MPFIT_SOLVER) {
+      mp_result result;
       printf("Calling Levenberg-Marquardt solver ...\n");
       status = LevMarFit(nParamsTot, nFreeParams, nPixels_tot, paramsVect, parameterInfo, 
-      					theModel, options.ftol, paramLimitsExist, options.verbose);
+      					theModel, options.ftol, paramLimitsExist, result, options.verbose);
     }
     else if (options.solver == DIFF_EVOLN_SOLVER) {
       printf("Calling Differential Evolution solver ..\n");

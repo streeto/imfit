@@ -30,6 +30,8 @@ class ModelObject
 
     void SetDebugLevel( int debuggingLevel );
     
+    void SetVerboseLevel( int level );
+
     void SetMaxThreads( int maxThreadNumber );
 
     void SetOMPChunkSize( int chunkSize );

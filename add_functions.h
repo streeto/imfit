@@ -13,7 +13,7 @@ using namespace std;
 
 
 int AddFunctions( ModelObject *theModel, vector<string> &functionNameList,
-                  vector<int> &functionSetIndices, bool subamplingFlag );
+                  vector<int> &functionSetIndices, bool subamplingFlag, bool verbose );
 
 // Use the following to print out names of available functions/components
 void PrintAvailableFunctions( );
@@ -23,5 +23,10 @@ void PrintAvailableFunctions( );
 // names (suitable for copying and pasting into a config file for makeimage or imfit).
 void ListFunctionParameters( );
 
+// Fill a vector with the parameters of function "functionName".
+int GetFunctionParameters( string &functionName, vector<string> &parameterNameList );
+
+// Fill a vector with the names of the available functions.
+void GetFunctionNames( vector<string> &functionNameList );
 
 #endif  // _ADD_FUNCTION_H_

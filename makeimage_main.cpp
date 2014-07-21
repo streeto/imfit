@@ -251,7 +251,7 @@ int main( int argc, char *argv[] )
   
   /* Add functions to the model object; also tells model object where function
      sets start */
-  status = AddFunctions(theModel, functionList, functionSetIndices, options.subsamplingFlag);
+  status = AddFunctions(theModel, functionList, functionSetIndices, options.subsamplingFlag, true);
   if (status < 0) {
   	fprintf(stderr, "*** ERROR: Failure in AddFunctions!\n\n");
   	exit(-1);

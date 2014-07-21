@@ -225,7 +225,7 @@ void PopulateFactoryMap( map<string, factory*>& input_factory_map )
 
 
 int AddFunctions( ModelObject *theModel, vector<string> &functionNameList,
-                  vector<int> &functionSetIndices, bool subsamplingFlag )
+                  vector<int> &functionSetIndices, bool subsamplingFlag, bool verbose )
 {
   int  nFunctions = functionNameList.size();
   string  currentName;
@@ -237,7 +237,9 @@ int AddFunctions( ModelObject *theModel, vector<string> &functionNameList,
 
   for (int i = 0; i < nFunctions; i++) {
     currentName = functionNameList[i];
-    printf("Function: %s\n", currentName.c_str());
+    if (verbose) {
+      printf("Function: %s\n", currentName.c_str());
+    }
     if (factory_map.count(currentName) < 1) {
       printf("*** AddFunctions: unidentified function name (\"%s\")\n", currentName.c_str());
       return - 1;
@@ -342,4 +344,49 @@ void ListFunctionParameters( )
 }
 
 
+int GetFunctionParameters(string &functionName, vector<string> &parameterNameList)
+{
+  FunctionObject  *thisFunctionObj;
+  map<string, factory*>  factory_map;
+  vector<string> factory_map_names;
+
+  PopulateFactoryMap(factory_map);
+
+  if (factory_map.count(functionName) < 1) {
+    return - 1;
+  }
+  else {
+    thisFunctionObj = factory_map[functionName]->create();
+    thisFunctionObj->GetParameterNames(parameterNameList);
+    delete thisFunctionObj;
+  }
+
+  // Avoid minor memory leak by freeing the individual funcobj_factory objects
+  FreeFactories(factory_map);
+
+  return 0;
+}
+
+
+void GetFunctionNames( vector<string> &functionNameList )
+{
+  string  currentName;
+  FunctionObject  *thisFunctionObj;
+  map<string, factory*>  factory_map;
+
+  PopulateFactoryMap(factory_map);
+
+  // get list of keys (function names) and step through it
+  map<string, factory*>::iterator  w;
+
+  for (w = factory_map.begin(); w != factory_map.end(); w++) {
+    thisFunctionObj = w->second->create();
+    currentName = thisFunctionObj->GetShortName();
+    functionNameList.push_back(currentName);
+    delete thisFunctionObj;
+  }
+
+  // Avoid minor memory leak by freeing the individual funcobj_factory objects
+  FreeFactories(factory_map);
+}
 /* END OF FILE: add_functions.cpp ---------------------------------------- */

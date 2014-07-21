@@ -148,6 +148,15 @@ void ModelObject::SetDebugLevel( int debuggingLevel )
   }
   else
     debugLevel = debuggingLevel;
+    verboseLevel = debuggingLevel;
+}
+
+
+/* ---------------- PUBLIC METHOD: SetVerboseLevel ----------------------- */
+
+void ModelObject::SetVerboseLevel( int level )
+{
+  verboseLevel = level;
 }
 
 

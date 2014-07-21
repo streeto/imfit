@@ -33,7 +33,7 @@ AC_ARG_ENABLE([nlopt], [--enable-nlopt], [ENABLE_NLOPT=1], [ENABLE_NLOPT=0])
 PKG_CHECK_MODULES([nlopt], [nlopt], [HAVE_NLOPT=1], [HAVE_NLOPT=0])
 AM_CONDITIONAL([USE_NLOPT], [test "$HAVE_NLOPT" -eq 1 && test "$ENABLE_NLOPT" -eq 1])
 
-AC_CONFIG_FILES([config.h])
+#AC_CONFIG_FILES([config.h])
 AC_CONFIG_FILES([imfit.pc Makefile])
 AC_OUTPUT
 

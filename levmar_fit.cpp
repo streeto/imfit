@@ -66,7 +66,7 @@ int myfunc_mpfit( int nDataVals, int nParams, double *params, double *deviates,
 
 int LevMarFit( int nParamsTot, int nFreeParams, int nDataVals, double *paramVector, 
 				mp_par *parameterLimits, ModelObject *theModel, double ftol, 
-				bool paramLimitsExist, int verbose )
+				bool paramLimitsExist, mp_result &resultOut, int verbose )
 {
   double  *paramErrs;
   mp_par  *mpfitParameterConstraints;
@@ -96,6 +96,7 @@ int LevMarFit( int nParamsTot, int nFreeParams, int nDataVals, double *paramVect
   status = mpfit(myfunc_mpfit, nDataVals, nParamsTot, paramVector, mpfitParameterConstraints,
 					&mpConfig, theModel, &mpfitResult);
 
+  resultOut = mpfitResult;
   if (verbose >= 0) {
     printf("\n");
     PrintResults(paramVector, 0, &mpfitResult, theModel, nFreeParams, parameterLimits, status);
