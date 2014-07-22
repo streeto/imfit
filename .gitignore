@@ -23,3 +23,7 @@ libtool
 ltmain.sh
 makeimage
 missing
+.autotools
+.cproject
+.project
+.settings/language.settings.xml
