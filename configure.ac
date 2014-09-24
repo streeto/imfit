@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([imfit], [1.0.2], [erwin@mpe.mpg.de])
+AC_INIT([imfit], [1.0.3], [erwin@mpe.mpg.de])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.10 -Wall])

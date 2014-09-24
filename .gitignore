@@ -27,3 +27,4 @@ missing
 .cproject
 .project
 .settings/language.settings.xml
+*.gz
