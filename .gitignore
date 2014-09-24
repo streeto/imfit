@@ -9,7 +9,6 @@ aclocal.m4
 ar-lib
 compile
 config.guess
-config.h
 config.log
 config.status
 config.sub
@@ -26,5 +25,5 @@ missing
 .autotools
 .cproject
 .project
-.settings/language.settings.xml
+.settings
 *.gz
