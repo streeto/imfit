@@ -62,6 +62,7 @@ FUNCTION_SRC = function_objects/function_object.cpp \
                function_objects/func_broken-exp.cpp \
                function_objects/func_broken-exp2d.cpp \
                function_objects/func_moffat.cpp \
+               function_objects/func_kolmogorov.cpp \
                function_objects/func_flatsky.cpp \
                function_objects/func_gaussian-ring.cpp \
                function_objects/func_gaussian-ring2side.cpp \
@@ -115,6 +116,7 @@ FUNCTION_HDR = function_objects/function_object.h \
                function_objects/func_broken-exp.h \
                function_objects/func_broken-exp2d.h \
                function_objects/func_moffat.h \
+               function_objects/func_kolmogorov.h \
                function_objects/func_flatsky.h \
                function_objects/func_gaussian-ring.h \
                function_objects/func_gaussian-ring2side.h \
